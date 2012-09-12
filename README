@@ -1,0 +1,16 @@
+# Bash History All
+
+This set of files collects and retains bash history across sessions, including those coming into the machine via SSH.
+
+They are written by Leeland Artra in article http://nodsw.com/blog/leeland/2012/03/07-all-bash-history-revisited-load-time-solved-plus-directory-history.
+
+There are three files:
+    .bashrc.user
+    a_loghistory_func.sh
+    acd_func.sh
+
+For my machine, I appended the contents of .bashrc.user to ~/.bashrc, placed the other two files in ~/bin/ and made them exececutable.
+
+Works like a charm.
+
+

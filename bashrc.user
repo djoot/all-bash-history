@@ -1,0 +1,58 @@
+# are we an interactive shell?
+if [ "$PS1" ]; then
+
+  HOSTNAME=`hostname -s || echo unknown`
+
+  # add cd history function
+  [[ -f ${HOME}/bin/acd_func.sh ]] && . ${HOME}/bin/acd_func.sh
+  # make bash autocomplete with up arrow
+  bind '"\e[A":history-search-backward'
+  bind '"\e[B":history-search-forward'
+  ##################################
+  # BEG History manipulation section
+
+    # Don't save commands leading with a whitespace, or duplicated commands
+    export HISTCONTROL=ignoredups
+
+    # Enable huge history
+    export HISTFILESIZE=9999999999
+    export HISTSIZE=9999999999
+
+    # Ignore basic "ls" and history commands
+    export HISTIGNORE="ls:ls -al:ll:history:h:h[dh]:h [0-9]*:h[dh] [0-9]*"
+
+    # Save timestamp info for every command
+    export HISTTIMEFORMAT="[%F %T] ~~~ "
+
+    # Dump the history file after every command
+    shopt -s histappend
+    export PROMPT_COMMAND="history -a;"
+    [[ -f ${HOME}/bin/a_loghistory_func.sh ]] && . ${HOME}/bin/a_loghistory_func.sh
+
+    # Specific history file per host
+    export HISTFILE=$HOME/.history-$HOSTNAME
+
+    save_last_command () {
+        # Only want to do this once per process
+        if [ -z "$SAVE_LAST" ]; then
+            EOS=" # end session $USER@${HOSTNAME}:`tty`"
+            export SAVE_LAST="done"
+            if type _loghistory >/dev/null 2>&1; then
+                _loghistory
+                _loghistory -c "$EOS"
+            else
+                history -a
+            fi
+            /bin/echo -e "#`date +%s`\n$EOS" >> ${HISTFILE}
+        fi
+    }
+    trap 'save_last_command' EXIT
+
+  # END History manipulation section
+  ##################################
+
+  # Preload the working directory history list from the directory history
+  if type -t hd >/dev/null && type -t cd_func >/dev/null; then
+      for x in `hd 20` `pwd`; do cd_func $x ; done
+  fi
+fi
