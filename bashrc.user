@@ -53,6 +53,6 @@ if [ "$PS1" ]; then
 
   # Preload the working directory history list from the directory history
   if type -t hd >/dev/null && type -t cd_func >/dev/null; then
-      while read x; do cd_func "$x" ; done <<<"$(hd 20; pwd)"
+      while read x; do cd_func "$x" >&/dev/null ; done <<<"$(hd 20; pwd)"
   fi
 fi
